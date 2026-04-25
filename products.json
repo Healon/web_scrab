@@ -1,0 +1,88 @@
+[
+  {
+    "title": "Royal Canin UC33 貓飼料 10KG",
+    "targets": [
+      {
+        "store": "PChome",
+        "label": "泌尿道保健成貓UC33 10KG",
+        "url": "https://24h.pchome.com.tw/prod/DEBV7O-A900IOZ1H"
+      },
+      {
+        "store": "Momo",
+        "url": "https://www.momoshop.com.tw/goods/GoodsDetail.jsp?i_code=14175117"
+      }
+    ]
+  },
+  {
+    "title": "大研生醫瑪卡粉包5盒",
+    "targets": [
+      {
+        "store": "PChome",
+        "label": "精氣神瑪卡粉包7.4g*30包*5盒(馬卡+精胺酸5000m",
+        "url": "https://24h.pchome.com.tw/prod/DBDF00-1900G82SY"
+      },
+      {
+        "store": "Momo",
+        "url": "https://www.momoshop.com.tw/goods/GoodsDetail.jsp?i_code=12215009"
+      }
+    ]
+  },
+  {
+    "title": "大研生醫魚油5盒",
+    "targets": [
+      {
+        "store": "PChome",
+        "label": "德國頂級魚油-Omega-3 84%(60粒x5盒)",
+        "url": "https://24h.pchome.com.tw/prod/DBBBAM-1900B2QBX"
+      },
+      {
+        "store": "Momo",
+        "url": "https://www.momoshop.com.tw/goods/GoodsDetail.jsp?i_code=8133412"
+      }
+    ]
+  },
+  {
+    "title": "大研生醫B群5盒",
+    "targets": [
+      {
+        "store": "PChome",
+        "label": "B群緩釋雙層錠-添加五味子.牛磺酸(30錠/盒)",
+        "url": "https://24h.pchome.com.tw/prod/DBBBAM-A900B56JS"
+      },
+      {
+        "store": "PChome",
+        "label": "B群緩釋雙層錠-添加五味子.牛磺酸(30錠x5盒)",
+        "url": "https://24h.pchome.com.tw/prod/DBDF00-1900B8942"
+      },
+      {
+        "store": "PChome",
+        "label": "B群緩釋雙層錠-添加五味子.牛磺酸(30錠/盒)x2盒",
+        "url": "https://24h.pchome.com.tw/prod/DBBBAM-1900B5L97"
+      },
+      {
+        "store": "Momo",
+        "url": "https://www.momoshop.com.tw/goods/GoodsDetail.jsp?i_code=11873852"
+      }
+    ]
+  },
+  {
+    "title": "SK-II青春露330ml",
+    "targets": [
+      {
+        "store": "PChome",
+        "label": "青春露330ml-專櫃公司貨 (神仙水/緊緻/透亮/臉部保養",
+        "url": "https://24h.pchome.com.tw/prod/DDAD2O-A900HOFX1"
+      },
+      {
+        "store": "PChome",
+        "label": "青春露(330ml)-國際航空版",
+        "url": "https://24h.pchome.com.tw/prod/DDADP3-A900JDSUA"
+      },
+      {
+        "store": "PChome",
+        "label": "青春露330ml - 全新2028保存日期 (正統公司貨)",
+        "url": "https://24h.pchome.com.tw/prod/DDAD2O-A900BONYP"
+      }
+    ]
+  }
+]

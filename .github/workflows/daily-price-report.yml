@@ -1,0 +1,39 @@
+name: Daily price report
+
+on:
+  schedule:
+    # GitHub Actions cron uses UTC. 04:45 UTC = 12:45 Asia/Taipei.
+    - cron: "45 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  price-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate report
+        run: python price_report.py --output reports/latest.md --sleep 1 --timezone Asia/Taipei
+
+      - name: Send Telegram message
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python send_telegram.py reports/latest.md --allow-missing-secrets
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-price-report
+          path: reports/latest.md
