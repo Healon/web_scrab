@@ -29,6 +29,7 @@ class ScrapedItem:
     name: str | None = None
     price: int | None = None
     error: str | None = None
+    diagnosis: str | None = None
 
 
 class PriceScraper:
@@ -57,7 +58,13 @@ class PriceScraper:
             item.name = target.get("label") or item.name
             return item
         except Exception as exc:
-            return ScrapedItem(store=store, url=url, name=target.get("label"), error=str(exc))
+            return ScrapedItem(
+                store=store,
+                url=url,
+                name=target.get("label"),
+                error=self._short_error(exc),
+                diagnosis=self._diagnose_failure(store, exc=exc),
+            )
         finally:
             time.sleep(self.sleep_seconds)
 
@@ -104,7 +111,9 @@ class PriceScraper:
         name, price = self._parse_html_product(html)
         if not price:
             price = self._parse_momo_price(html)
-        return ScrapedItem(store="Momo", url=url, name=name, price=price)
+        diagnosis = None if price else self._diagnose_failure("Momo", html=html)
+        error = None if price else "找不到可解析價格"
+        return ScrapedItem(store="Momo", url=url, name=name, price=price, error=error, diagnosis=diagnosis)
 
     def _scrape_generic(self, store: str, url: str) -> ScrapedItem:
         html = self._get_html(url)
@@ -255,6 +264,49 @@ class PriceScraper:
         text = re.sub(r"\s+", " ", str(value)).strip()
         return text or None
 
+    def _short_error(self, exc: Exception) -> str:
+        if isinstance(exc, requests.exceptions.Timeout) or "timed out" in str(exc).lower():
+            return "Read timed out"
+        if isinstance(exc, requests.exceptions.HTTPError) and exc.response is not None:
+            return f"HTTP {exc.response.status_code}"
+        if isinstance(exc, requests.exceptions.ConnectionError):
+            return "Connection error"
+        return str(exc)
+
+    def _diagnose_failure(self, store: str, exc: Exception | None = None, html: str | None = None) -> str | None:
+        if store.lower() != "momo":
+            return None
+
+        message = str(exc).lower() if exc else ""
+        status_code = None
+        if isinstance(exc, requests.exceptions.HTTPError) and exc.response is not None:
+            status_code = exc.response.status_code
+
+        if isinstance(exc, requests.exceptions.Timeout) or "timed out" in message:
+            return "疑似 momo 反爬蟲/限流：連線逾時，GitHub Actions IP 可能被延遲或暫時限制"
+        if status_code in {403, 429, 503}:
+            return f"疑似 momo 反爬蟲/限流：回傳 HTTP {status_code}"
+        if isinstance(exc, requests.exceptions.ConnectionError):
+            return "可能是 momo 暫時阻擋或網路不穩：連線失敗"
+
+        if html:
+            lowered = html.lower()
+            block_keywords = (
+                "captcha",
+                "recaptcha",
+                "access denied",
+                "forbidden",
+                "robot",
+                "驗證",
+                "安全檢查",
+                "系統忙碌",
+            )
+            if any(keyword in lowered for keyword in block_keywords):
+                return "疑似 momo 反爬蟲：回傳驗證、阻擋或安全檢查頁"
+            return "可能是 momo 動態載入或版型變更；若同批多筆 momo 失敗，偏向反爬蟲/限流"
+
+        return "可能是 momo 反爬蟲/限流或暫時性網路異常"
+
 
 def load_products(path: Path) -> list[dict[str, Any]]:
     with path.open("r", encoding="utf-8") as file:
@@ -273,11 +325,23 @@ def price_label(store: str) -> str:
 
 
 def format_report(products: list[dict[str, Any]], scraped: dict[str, ScrapedItem], report_time: datetime) -> str:
+    momo_failures = [
+        item for item in scraped.values()
+        if item.store.lower() == "momo" and item.price is None
+    ]
     lines = [
         f"每日價格報告 {report_time:%Y/%m/%d %H:%M}",
         "",
         "",
     ]
+    if momo_failures:
+        suspected = sum(1 for item in momo_failures if item.diagnosis and "反爬蟲" in item.diagnosis)
+        lines.extend(
+            [
+                f"⚠️ momo 抓取異常 {len(momo_failures)} 筆，其中 {suspected} 筆疑似反爬蟲/限流或阻擋",
+                "",
+            ]
+        )
 
     for product in products:
         lines.append(f"📌 {product['title']}")
@@ -300,6 +364,8 @@ def format_report(products: list[dict[str, Any]], scraped: dict[str, ScrapedItem
                 else:
                     detail = f" ({item.error})" if item.error else ""
                     lines.append(f"    💰 {price_label(store)} 抓取失敗{detail}")
+                    if item.diagnosis:
+                        lines.append(f"    ⚠️ 判斷：{item.diagnosis}")
                 lines.append(f"    🔗 {item.url}")
         lines.append("")
 
