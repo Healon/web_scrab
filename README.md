@@ -49,6 +49,8 @@ GitHub repo 需要設定兩個 secrets：
 
 如果還沒設定 Telegram secrets，workflow 仍會產生報告 artifact，但會略過 Telegram 傳送。
 
+每日排程預設會在部分商品抓取失敗時繼續送出報告，讓 Telegram 也能收到失敗明細。若要在本機用嚴格模式檢查，可加上 `--fail-on-missing`。
+
 如果你的 GitHub repo 根目錄不是 `web_scrab`，要把 `.github/workflows/daily-price-report.yml` 放到 repo 根目錄，並把 workflow 裡的路徑改成 `web_scrab/requirements.txt`、`web_scrab/price_report.py` 等。
 
 ## 修改商品

@@ -313,6 +313,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sleep", type=float, default=1.0, help="每次請求間隔秒數")
     parser.add_argument("--timeout", type=int, default=20, help="HTTP timeout 秒數")
     parser.add_argument("--timezone", default="Asia/Taipei", help="報告時間使用的時區")
+    parser.add_argument("--fail-on-missing", action="store_true", help="有商品價格抓取失敗時回傳非 0 exit code")
     return parser.parse_args()
 
 
@@ -342,7 +343,7 @@ def main() -> int:
         sys.stdout.write(report)
 
     failures = [item for item in scraped.values() if item.price is None]
-    return 1 if failures else 0
+    return 1 if args.fail_on_missing and failures else 0
 
 
 if __name__ == "__main__":
