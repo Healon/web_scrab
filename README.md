@@ -36,7 +36,9 @@ python send_telegram.py reports/latest.md
 
 ## GitHub Actions 雲端定時跑
 
-這個資料夾已包含 `.github/workflows/daily-price-report.yml`，推到 GitHub 後會每天台北時間 12:45 自動執行，也可以在 Actions 頁面手動按 `Run workflow`。
+這個資料夾已包含 `.github/workflows/daily-price-report.yml`，推到 GitHub 後會每天台北時間 12:00 自動執行，也可以在 Actions 頁面手動按 `Run workflow`。
+
+目前排程時間：每天台北時間 12:00。
 
 GitHub repo 需要設定兩個 secrets：
 
