@@ -38,7 +38,7 @@ python send_telegram.py reports/latest.md
 
 這個資料夾已包含 `.github/workflows/daily-price-report.yml`，推到 GitHub 後會每天台北時間 12:07 自動執行，也可以在 Actions 頁面手動按 `Run workflow`。
 
-目前排程時間：每天台北時間 12:07。
+目前排程時間：每天台北時間 12:07，並在 12:17、12:27 設有備援排程。若同一天已經有成功的 scheduled run，備援排程會自動略過，避免重複發 Telegram。
 
 GitHub repo 需要設定兩個 secrets：
 
@@ -52,6 +52,8 @@ GitHub repo 需要設定兩個 secrets：
 如果還沒設定 Telegram secrets，workflow 仍會產生報告 artifact，但會略過 Telegram 傳送。
 
 每日排程預設會在部分商品抓取失敗時繼續送出報告，讓 Telegram 也能收到失敗明細。若要在本機用嚴格模式檢查，可加上 `--fail-on-missing`。
+
+GitHub Actions 的 scheduled workflow 不是精準排程服務，偶爾可能延遲或漏觸發；因此本專案使用多個中午附近的 cron 加上 `should_run_report.py` 的同日去重保護。
 
 如果你的 GitHub repo 根目錄不是 `web_scrab`，要把 `.github/workflows/daily-price-report.yml` 放到 repo 根目錄，並把 workflow 裡的路徑改成 `web_scrab/requirements.txt`、`web_scrab/price_report.py` 等。
 

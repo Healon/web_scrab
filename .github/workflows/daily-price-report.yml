@@ -3,9 +3,20 @@ name: Daily price report
 on:
   schedule:
     # GitHub Actions cron uses UTC. 04:07 UTC = 12:07 Asia/Taipei.
-    # Avoid minute 0 because GitHub Actions can delay or drop jobs at the start of an hour.
+    # Backup schedules reduce the chance of a missed GitHub scheduled run.
+    # The duplicate guard below keeps Telegram to one scheduled report per day.
     - cron: "7 4 * * *"
+    - cron: "17 4 * * *"
+    - cron: "27 4 * * *"
   workflow_dispatch:
+
+concurrency:
+  group: daily-price-report
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
 
 jobs:
   price-report:
@@ -21,19 +32,29 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Check duplicate scheduled run
+        id: duplicate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python should_run_report.py
+
       - name: Install dependencies
+        if: steps.duplicate.outputs.should_run == 'true'
         run: pip install -r requirements.txt
 
       - name: Generate report
+        if: steps.duplicate.outputs.should_run == 'true'
         run: python price_report.py --output reports/latest.md --sleep 1 --timezone Asia/Taipei
 
       - name: Send Telegram message
+        if: steps.duplicate.outputs.should_run == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python send_telegram.py reports/latest.md --allow-missing-secrets
 
       - name: Upload report artifact
+        if: steps.duplicate.outputs.should_run == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: daily-price-report
