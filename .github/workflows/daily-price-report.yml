@@ -11,7 +11,6 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  actions: read
   contents: read
 
 jobs:
@@ -28,29 +27,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Check duplicate scheduled run
-        id: duplicate
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: python should_run_report.py
-
       - name: Install dependencies
-        if: steps.duplicate.outputs.should_run == 'true'
         run: pip install -r requirements.txt
 
       - name: Generate report
-        if: steps.duplicate.outputs.should_run == 'true'
         run: python price_report.py --output reports/latest.md --sleep 1 --timezone Asia/Taipei
 
       - name: Send Telegram message
-        if: steps.duplicate.outputs.should_run == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python send_telegram.py reports/latest.md --allow-missing-secrets
 
       - name: Upload report artifact
-        if: steps.duplicate.outputs.should_run == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: daily-price-report
