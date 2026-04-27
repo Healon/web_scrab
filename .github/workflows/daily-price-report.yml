@@ -2,12 +2,10 @@ name: Daily price report
 
 on:
   schedule:
-    # GitHub Actions cron uses UTC. 04:07 UTC = 12:07 Asia/Taipei.
-    # Backup schedules reduce the chance of a missed GitHub scheduled run.
-    # The duplicate guard below keeps Telegram to one scheduled report per day.
-    - cron: "7 4 * * *"
-    - cron: "17 4 * * *"
-    - cron: "27 4 * * *"
+    # GitHub Actions cron uses UTC. 04:00-05:55 UTC = 12:00-13:55 Asia/Taipei.
+    # GitHub scheduled runs are best-effort and can be delayed or dropped, so this
+    # retries every 5 minutes and relies on the duplicate guard below to send once.
+    - cron: "*/5 4-5 * * *"
   workflow_dispatch:
 
 concurrency:
