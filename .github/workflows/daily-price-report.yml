@@ -2,10 +2,8 @@ name: Daily price report
 
 on:
   schedule:
-    # GitHub Actions cron uses UTC. 04:00-05:55 UTC = 12:00-13:55 Asia/Taipei.
-    # GitHub scheduled runs are best-effort and can be delayed or dropped, so this
-    # retries every 5 minutes and relies on the duplicate guard below to send once.
-    - cron: "*/5 4-5 * * *"
+    # GitHub Actions cron uses UTC. 04:07 UTC = 12:07 Asia/Taipei.
+    - cron: "7 4 * * *"
   workflow_dispatch:
 
 concurrency:
