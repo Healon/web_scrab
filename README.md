@@ -69,4 +69,4 @@ GitHub Actions 的 scheduled workflow 不是精準排程服務，偶爾可能延
 
 momo 與 PChome 頁面可能會調整版型或加強防爬；如果價格抓取失敗，程式會在報告中標示「抓取失敗」，方便後續調整解析規則。
 
-PChome API 目前會回傳 `M`、`P`、`Low` 等價格欄位；本程式用 `P` 當報告中的「售價」。
+PChome API 目前會回傳 `M`、`P`、`Low` 等價格欄位；本程式優先用 `Low` 當報告中的「折扣價 / 特價」，再退回 `P` 或 `M`。

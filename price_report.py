@@ -235,9 +235,10 @@ class PriceScraper:
             return None
         price = product.get("Price")
         if isinstance(price, dict):
-            # PChome exposes M as list price, P as displayed sale price, and Low as
-            # member/coupon-style low price. The requested report uses the sale price.
-            parsed = self._first_int(price, ("P", "Low", "M"))
+            # PChome exposes M as list price, P as displayed price, and Low as
+            # discounted / special price. For this report we want the discount
+            # price first, then fall back to P or M when Low is unavailable.
+            parsed = self._first_int(price, ("Low", "P", "M"))
             if parsed:
                 return parsed
         return self._first_int(product, ("Price", "price", "SalePrice", "discountPrice"))
