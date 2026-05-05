@@ -9,6 +9,7 @@ from datetime import datetime
 from html import unescape
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 import requests
@@ -87,7 +88,7 @@ class PriceScraper:
         return json.loads(text)
 
     def _scrape_pchome(self, url: str) -> ScrapedItem:
-        product_id = url.rstrip("/").split("/")[-1]
+        product_id = Path(urlsplit(url).path.rstrip("/")).name
         api_url = (
             "https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button"
             f"&id={product_id}&fields=Id,Name,Nick,Price,Qty,ButtonType,SaleStatus"
