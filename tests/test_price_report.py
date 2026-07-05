@@ -59,3 +59,18 @@ def test_pchome_scrape_ignores_query_string_when_building_api_url(scraper, monke
 
     assert "id=DBDF0C-1900J14FM" in captured["api_url"]
     assert "fq=" not in captured["api_url"]
+
+
+def test_meta_price_reads_momo_product_price_amount(scraper):
+    html = '<meta name="product:price:amount" content="2,899">'
+
+    assert scraper._parse_html_product(html) == (None, 2899)
+
+
+def test_momo_meta_price_precedes_embedded_goods_price(scraper):
+    html = (
+        '<html><head><meta name="product:price:amount" content="2,899"></head>'
+        '<body>{"goodsPrice":"748"}<span>促銷價</span><span>2,899</span></body></html>'
+    )
+
+    assert scraper._parse_html_product(html) == (None, 2899)

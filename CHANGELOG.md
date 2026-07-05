@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- 修正 momo 主商品價格解析順序，優先使用 `meta name="product:price:amount"`，避免抓到頁面內加購/組合商品的 `goodsPrice`。
+- 新增 momo 價格回歸測試，覆蓋主商品 meta 價格優先於內嵌 `goodsPrice` 的情境。
+
 ## 2026-04-25
 
 - 建立 PChome / momo 每日價格爬蟲。
