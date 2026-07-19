@@ -190,6 +190,7 @@ class PriceScraper:
 
     def _meta_price(self, soup: BeautifulSoup) -> int | None:
         for attr, value in [
+            ("name", "product:price:amount"),
             ("property", "product:price:amount"),
             ("property", "og:price:amount"),
             ("name", "price"),
